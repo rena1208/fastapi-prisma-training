@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from .prisma_client import prisma
 from prisma import errors as prisma_errors
 
-from .todo import create
+from .todo import create, update
 
 
 @asynccontextmanager
@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(create.router, prefix="/todos")
-
+app.include_router(update.router, prefix="/todos")
 class TodoModel(BaseModel):
     id: int
     title: str
