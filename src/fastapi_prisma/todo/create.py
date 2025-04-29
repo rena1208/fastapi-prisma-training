@@ -1,17 +1,9 @@
-from fastapi import FastAPI
+from fastapi import APIRouter
 from pydantic import BaseModel
-from prisma import Prisma
-from contextlib import asynccontextmanager
+from ..prisma_client import prisma
+# from contextlib import asynccontextmanager
 
-prisma = Prisma()
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    await prisma.connect()
-    yield
-    await prisma.disconnect()
-
-app = FastAPI(lifespan=lifespan)
+router = APIRouter()
 
 # リクエスト用のモデル
 class TodoCreateRequest(BaseModel):
@@ -23,7 +15,7 @@ class TodoResponse(BaseModel):
     title: str
     done: bool
 
-@app.post("/todos", response_model=TodoResponse)
+@router.post("/create", response_model=TodoResponse)
 async def create_todo(todo: TodoCreateRequest):
     created = await prisma.todo.create(
         data={

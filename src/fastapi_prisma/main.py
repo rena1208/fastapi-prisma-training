@@ -1,12 +1,11 @@
-# src/fastapi_prisma/main.py
 from contextlib import asynccontextmanager
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from prisma import Prisma
+from .prisma_client import prisma
 from prisma import errors as prisma_errors
 
-prisma = Prisma()
+from .todo import create
 
 
 @asynccontextmanager
@@ -17,6 +16,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.include_router(create.router, prefix="/todos")
 
 class TodoModel(BaseModel):
     id: int
